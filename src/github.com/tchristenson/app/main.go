@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -78,7 +80,7 @@ func getReceiptPointsById(id string) (map[string]int, error) {
 func calculatePoints(r receipt) int {
 	points := 0
 
-	// One point for every alphanumeric character
+	// One point for every alphanumeric character in the retailer name
 	for _, char := range r.Retailer {
 		if unicode.IsLetter(char) || unicode.IsDigit(char) {
 			points += 1
@@ -100,6 +102,17 @@ func calculatePoints(r receipt) int {
 	numItems := len(r.Items)
 	if numItems >= 2 {
 		points += (numItems / 2) * 5
+	}
+
+	// If the trimmed length of the item description is a multiple of 3, multiply the price by 0.2 and round up to the nearest integer
+	for _, item := range r.Items {
+		trimmedItemDescription := strings.TrimSpace(item.ShortDescription)
+		if len(trimmedItemDescription)%3 == 0 {
+			priceFloat, err := strconv.ParseFloat(item.Price, 64)
+			if err == nil {
+				points += int(math.Ceil(priceFloat * 0.2))
+			}
+		}
 	}
 
 	return points
