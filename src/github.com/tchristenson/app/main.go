@@ -31,15 +31,18 @@ var receipts []receipt
 func processReceipt(c *gin.Context) {
 	uuid := uuid.New()
 	var newReceipt receipt
-	fmt.Println(uuid)
+	newReceipt.ID = uuid.String()
 
 	if err := c.BindJSON(&newReceipt); err != nil {
 		return
 	}
 
 	receipts = append(receipts, newReceipt)
+	fmt.Println(receipts)
 
-	c.IndentedJSON(http.StatusCreated, newReceipt)
+	response := map[string]string{"id": newReceipt.ID}
+
+	c.IndentedJSON(http.StatusCreated, response)
 }
 
 func main() {
