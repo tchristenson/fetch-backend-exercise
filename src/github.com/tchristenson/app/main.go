@@ -44,15 +44,44 @@ func processReceipt(c *gin.Context) {
 	}
 
 	receipts = append(receipts, newReceipt)
-	fmt.Println(receipts)
+	// fmt.Println(receipts)
 
 	response := map[string]string{"id": newReceipt.ID}
 
 	c.IndentedJSON(http.StatusOK, response)
 }
 
+func getReceiptPointsHandler(c *gin.Context) {
+	id := c.Param("id")
+	points, err := getReceiptPointsById(id)
+
+	if err != nil {
+		c.String(http.StatusNotFound, "No receipt found for that id")
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, points)
+}
+
+func getReceiptPointsById(id string) (map[string]int, error) {
+	for _, receipt := range receipts {
+		if receipt.ID == id {
+			points := calculatePoints(receipt)
+			return map[string]int{"points": points}, nil
+		}
+	}
+
+	return nil, fmt.Errorf("No receipt found for that id")
+}
+
+func calculatePoints(r receipt) int {
+	// Implement your logic to calculate points based on the receipt
+	return 0 // Replace with actual points calculation
+}
+
 func main() {
 	router := gin.Default()
 	router.POST("/receipts/process", processReceipt)
+	router.GET("/receipts/:id/points", getReceiptPointsHandler)
 	router.Run("localhost:5000")
 }
