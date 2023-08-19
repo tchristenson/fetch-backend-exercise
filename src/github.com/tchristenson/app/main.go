@@ -78,20 +78,28 @@ func getReceiptPointsById(id string) (map[string]int, error) {
 func calculatePoints(r receipt) int {
 	points := 0
 
-	// Check alphanumeric characters
+	// One point for every alphanumeric character
 	for _, char := range r.Retailer {
 		if unicode.IsLetter(char) || unicode.IsDigit(char) {
-			points++
+			points += 1
 		}
 	}
 
-	// Check if the total is a round dollar amount
+	// 50 points if the total is a round dollar amount with no cents, 25 points if the total is a multiple of 0.25
 	totalFloat, err := strconv.ParseFloat(r.Total, 64)
-	fmt.Println(totalFloat)
 	if err == nil {
 		if int(totalFloat*100)%100 == 0 {
 			points += 50
 		}
+		if int(totalFloat*100)%25 == 0 {
+			points += 25
+		}
+	}
+
+	// 5 points for every two items on the receipt
+	numItems := len(r.Items)
+	if numItems >= 2 {
+		points += (numItems / 2) * 5
 	}
 
 	return points
