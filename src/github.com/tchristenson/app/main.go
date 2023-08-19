@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	// "errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"net/http"
+	"strconv"
+	"unicode"
 )
 
 type receipt struct {
@@ -75,8 +76,25 @@ func getReceiptPointsById(id string) (map[string]int, error) {
 }
 
 func calculatePoints(r receipt) int {
-	// Implement your logic to calculate points based on the receipt
-	return 0 // Replace with actual points calculation
+	points := 0
+
+	// Check alphanumeric characters
+	for _, char := range r.Retailer {
+		if unicode.IsLetter(char) || unicode.IsDigit(char) {
+			points++
+		}
+	}
+
+	// Check if the total is a round dollar amount
+	totalFloat, err := strconv.ParseFloat(r.Total, 64)
+	fmt.Println(totalFloat)
+	if err == nil {
+		if int(totalFloat*100)%100 == 0 {
+			points += 50
+		}
+	}
+
+	return points
 }
 
 func main() {
