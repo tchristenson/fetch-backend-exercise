@@ -34,6 +34,12 @@ func processReceipt(c *gin.Context) {
 	newReceipt.ID = uuid.String()
 
 	if err := c.BindJSON(&newReceipt); err != nil {
+		c.String(http.StatusBadRequest, "The receipt is invalid")
+		return
+	}
+
+	if len(newReceipt.Items) == 0 {
+		c.String(http.StatusBadRequest, "The receipt is invalid")
 		return
 	}
 
@@ -42,7 +48,7 @@ func processReceipt(c *gin.Context) {
 
 	response := map[string]string{"id": newReceipt.ID}
 
-	c.IndentedJSON(http.StatusCreated, response)
+	c.IndentedJSON(http.StatusOK, response)
 }
 
 func main() {
