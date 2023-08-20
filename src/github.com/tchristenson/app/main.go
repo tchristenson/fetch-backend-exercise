@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type receipt struct {
@@ -111,6 +112,31 @@ func calculatePoints(r receipt) int {
 			priceFloat, err := strconv.ParseFloat(item.Price, 64)
 			if err == nil {
 				points += int(math.Ceil(priceFloat * 0.2))
+			}
+		}
+	}
+
+	// 6 points if the day in the purchase date is odd
+	day := strings.Split(r.PurchaseDate, "-")[2]
+	dayInt, err := strconv.Atoi(day)
+
+	if err == nil {
+		if dayInt%2 == 1 {
+			points += 6
+		}
+	}
+
+	// 10 points if the time of purchase is after 2:00pm and before 4:00pm
+	hour := strings.Split(r.PurchaseTime, ":")[0]
+	hourInt, err := strconv.Atoi(hour)
+
+	if err == nil {
+		minutes := strings.Split(r.PurchaseTime, ":")[1]
+		minutesInt, err := strconv.Atoi(minutes)
+
+		if err == nil {
+			if (hourInt == 14 && minutesInt >= 1) || (hourInt == 15 && minutesInt <= 59) {
+				points += 10
 			}
 		}
 	}
