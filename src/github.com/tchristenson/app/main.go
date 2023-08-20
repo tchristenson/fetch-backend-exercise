@@ -73,19 +73,19 @@ func getReceiptPointsHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, points)
 }
 
-func getReceiptPointsById(id string) (map[string]int, error) {
+func getReceiptPointsById(id string) (map[string]int64, error) {
 	for _, receipt := range receipts {
 		if receipt.ID == id {
 			points := calculatePoints(receipt)
-			return map[string]int{"points": points}, nil
+			return map[string]int64{"points": points}, nil
 		}
 	}
 
 	return nil, fmt.Errorf("No receipt found for that id")
 }
 
-func calculatePoints(r receipt) int {
-	points := 0
+func calculatePoints(r receipt) int64 {
+	points := int64(0)
 
 	// One point for every alphanumeric character in the retailer name
 	for _, char := range r.Retailer {
@@ -108,7 +108,7 @@ func calculatePoints(r receipt) int {
 	// 5 points for every two items on the receipt
 	numItems := len(r.Items)
 	if numItems >= 2 {
-		points += (numItems / 2) * 5
+		points += int64((numItems / 2) * 5)
 	}
 
 	// If the trimmed length of the item description is a multiple of 3, multiply the price by 0.2 and round up to the nearest integer
@@ -117,7 +117,7 @@ func calculatePoints(r receipt) int {
 		if len(trimmedItemDescription)%3 == 0 {
 			priceFloat, err := strconv.ParseFloat(item.Price, 64)
 			if err == nil {
-				points += int(math.Ceil(priceFloat * 0.2))
+				points += int64(math.Ceil(priceFloat * 0.2))
 			}
 		}
 	}
