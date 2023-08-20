@@ -12,7 +12,7 @@ import (
 )
 
 type receipt struct {
-	ID           string `json:"id"`
+	Id           string `json:"id"`
 	Retailer     string `json:"retailer"`
 	PurchaseDate string `json:"purchaseDate"`
 	PurchaseTime string `json:"purchaseTime"`
@@ -24,7 +24,7 @@ type receipt struct {
 }
 
 type item struct {
-	ID               string `json:"id"`
+	Id               string `json:"id"`
 	ShortDescription string `json:"shortDescription"`
 	Price            string `json:"Price"`
 }
@@ -42,7 +42,7 @@ func main() {
 func processReceipt(c *gin.Context) {
 	uuid := uuid.New()
 	var newReceipt receipt
-	newReceipt.ID = uuid.String()
+	newReceipt.Id = uuid.String()
 
 	if err := c.BindJSON(&newReceipt); err != nil {
 		c.String(http.StatusBadRequest, "The receipt is invalid")
@@ -56,7 +56,7 @@ func processReceipt(c *gin.Context) {
 
 	receipts = append(receipts, newReceipt)
 
-	response := map[string]string{"id": newReceipt.ID}
+	response := map[string]string{"id": newReceipt.Id}
 
 	c.IndentedJSON(http.StatusOK, response)
 }
@@ -75,7 +75,7 @@ func getReceiptPointsHandler(c *gin.Context) {
 
 func getReceiptPointsById(id string) (map[string]int64, error) {
 	for _, receipt := range receipts {
-		if receipt.ID == id {
+		if receipt.Id == id {
 			points := calculatePoints(receipt)
 			return map[string]int64{"points": points}, nil
 		}
