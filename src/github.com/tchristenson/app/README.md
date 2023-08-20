@@ -78,3 +78,23 @@ The request body should be a JSON object with the following structure:
 >![Postman 2](assets/post-request.png)
 * Click `Send` and you should receive a `Status: 200 OK` response in the body section, plus a JSON object with the receipt's id.
 >![Postman 3](assets/post-200-response.png)
+
+### POST route "/receipts/process" Errors
+* A `Status: 400 Bad Request` error response will occur if a request body is sent in the wrong format:
+  * Missing parameters
+  * A receipt with no items purchased
+  * Parameters with wrong data type
+
+
+## GET Route "/receipts/:receiptId/points" - Get Receipt Points
+* Copy the receipt ID received from the response body of the `POST` request.
+* Click the dropdown that says `POST` and select `GET`.
+* Enter the server port with the `/receipts/:receiptId/points` endpoint.
+* Paste the copied receiptId into the endpoint.
+* Your interface should look like the image below.
+>![Postman 4](assets/get-request.png)
+* Click `Send` and you should receive a `Status: 200 OK` response in the body section, plus a JSON object with the receipt's points.
+>![Postman 5](assets/get-200-response.png)
+
+### GET route "/receipts/:receiptId/points" Errors
+* A `Status: 404 Not Found` error response will occur if a receipt ID cannot be matched to a posted receipt.
