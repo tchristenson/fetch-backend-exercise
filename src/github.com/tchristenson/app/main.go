@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 	"unicode"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type receipt struct {
@@ -20,7 +19,7 @@ type receipt struct {
 	Items        []struct {
 		ShortDescription string `json:"shortDescription"`
 		Price            string `json:"price"`
-	} `json:"items`
+	} `json:"items"`
 	Total string `json:"total"`
 }
 
@@ -31,6 +30,14 @@ type item struct {
 }
 
 var receipts []receipt
+
+func main() {
+	router := gin.Default()
+	router.POST("/receipts/process", processReceipt)
+	router.GET("/receipts/:id/points", getReceiptPointsHandler)
+	port := 5000
+	router.Run(fmt.Sprintf("localhost:%d", port))
+}
 
 func processReceipt(c *gin.Context) {
 	uuid := uuid.New()
@@ -48,7 +55,6 @@ func processReceipt(c *gin.Context) {
 	}
 
 	receipts = append(receipts, newReceipt)
-	// fmt.Println(receipts)
 
 	response := map[string]string{"id": newReceipt.ID}
 
@@ -142,11 +148,4 @@ func calculatePoints(r receipt) int {
 	}
 
 	return points
-}
-
-func main() {
-	router := gin.Default()
-	router.POST("/receipts/process", processReceipt)
-	router.GET("/receipts/:id/points", getReceiptPointsHandler)
-	router.Run("localhost:5000")
 }
