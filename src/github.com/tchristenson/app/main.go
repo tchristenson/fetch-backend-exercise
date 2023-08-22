@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type receipt struct {
@@ -49,9 +50,26 @@ func processReceipt(c *gin.Context) {
 		return
 	}
 
-	if len(newReceipt.Items) == 0 {
+	// Check for missing or empty fields in the post body
+	if newReceipt.Retailer == "" ||
+		newReceipt.PurchaseDate == "" ||
+		newReceipt.PurchaseTime == "" ||
+		len(newReceipt.Items) == 0 ||
+		newReceipt.Total == "" {
 		c.String(http.StatusBadRequest, "The receipt is invalid")
 		return
+	}
+
+	// Check for missing or empty item descriptions and prices
+	for _, item := range newReceipt.Items {
+		if item.ShortDescription == "" {
+			c.String(http.StatusBadRequest, "The receipt is invalid")
+			return
+		}
+		if item.Price == "" {
+			c.String(http.StatusBadRequest, "The receipt is invalid")
+			return
+		}
 	}
 
 	receipts = append(receipts, newReceipt)
