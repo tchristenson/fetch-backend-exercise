@@ -18,7 +18,7 @@ A backend REST API web service that accepts HTTP requests and returns responses 
     ```
     git clone https://github.com/tchristenson/fetch-backend-exercise.git
     ```
-2) Go to the project's root directory
+2) Cd into the following folder
     ```
     cd /my/path/to/fetch-backend-exercise/src/github.com/tchristenson/app
     ```
